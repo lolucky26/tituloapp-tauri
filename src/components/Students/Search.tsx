@@ -7,7 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Table from 'react-bootstrap/Table';
 import StudentsSearchStudentItem from '../Students/SearchStudentItem.tsx';
 import { useState, ReactElement} from 'react';
-import { StudentType, SelectStudentForm, DeleteStudentForm, DisableStudentForm} from '../../types';
+import { StudentSearchType, SelectStudentForm, DeleteStudentForm, DisableStudentForm} from '../../types';
 import {FormikHelpers} from 'formik';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort } from '@fortawesome/free-solid-svg-icons';
@@ -15,7 +15,7 @@ import { faSortDesc } from '@fortawesome/free-solid-svg-icons';
 import { faSortAsc } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
-    students: StudentType[];
+    students: StudentSearchType[];
     visible: boolean;
     submitFormSelectStudent:(values:SelectStudentForm, formikBag:FormikHelpers<SelectStudentForm>) => void;
     newStudentButtonClicked:()=> void;
@@ -36,6 +36,7 @@ function StudentsSearch ({students,visible,submitFormSelectStudent,newStudentBut
     let [nombreString, setNombreString] = useState<ReactElement>(<FontAwesomeIcon icon={faSort}/>);
     let [creadoString, setCreadoString] = useState<ReactElement>(<FontAwesomeIcon icon={faSort}/>);
     let [editadoString, setEditadoString] = useState<ReactElement>(<FontAwesomeIcon icon={faSort}/>);
+    let [validadoString, setValidadoString] = useState<ReactElement>(<FontAwesomeIcon icon={faSort}/>);
 
     let [showHidden, setShowHidden] = useState<boolean>(false);
     /*
@@ -55,6 +56,7 @@ function StudentsSearch ({students,visible,submitFormSelectStudent,newStudentBut
             setNombreString(<FontAwesomeIcon icon={faSort}/>);
             setCreadoString(<FontAwesomeIcon icon={faSort}/>);
             setEditadoString(<FontAwesomeIcon icon={faSort}/>);
+            setValidadoString(<FontAwesomeIcon icon={faSort}/>);
         }
     }
     const onClickSortByCarrera = () =>{
@@ -68,6 +70,7 @@ function StudentsSearch ({students,visible,submitFormSelectStudent,newStudentBut
             setNombreString(<FontAwesomeIcon icon={faSort}/>);
             setCreadoString(<FontAwesomeIcon icon={faSort}/>);
             setEditadoString(<FontAwesomeIcon icon={faSort}/>);
+            setValidadoString(<FontAwesomeIcon icon={faSort}/>);
         }
     }
     const onClickSortByNombre = () =>{
@@ -81,6 +84,7 @@ function StudentsSearch ({students,visible,submitFormSelectStudent,newStudentBut
             setCarreraString(<FontAwesomeIcon icon={faSort}/>);
             setCreadoString(<FontAwesomeIcon icon={faSort}/>);
             setEditadoString(<FontAwesomeIcon icon={faSort}/>);
+            setValidadoString(<FontAwesomeIcon icon={faSort}/>);
         }
     }
 
@@ -95,6 +99,7 @@ function StudentsSearch ({students,visible,submitFormSelectStudent,newStudentBut
             setNombreString(<FontAwesomeIcon icon={faSort}/>);
             setCarreraString(<FontAwesomeIcon icon={faSort}/>);
             setEditadoString(<FontAwesomeIcon icon={faSort}/>);
+            setValidadoString(<FontAwesomeIcon icon={faSort}/>);
         }
     }
 
@@ -109,9 +114,10 @@ function StudentsSearch ({students,visible,submitFormSelectStudent,newStudentBut
             setNombreString(<FontAwesomeIcon icon={faSort}/>);
             setCarreraString(<FontAwesomeIcon icon={faSort}/>);
             setCreadoString(<FontAwesomeIcon icon={faSort}/>);
+            setValidadoString(<FontAwesomeIcon icon={faSort}/>);
         }
     }
-    
+
     const onChangeBuscarButton = (e: React.ChangeEvent<HTMLTextAreaElement>) =>{
         setNombreString(<FontAwesomeIcon icon={faSort}/>);
         setFolioString(<FontAwesomeIcon icon={faSort}/>);
@@ -121,6 +127,21 @@ function StudentsSearch ({students,visible,submitFormSelectStudent,newStudentBut
         //setSearchString(e.nativeEvent.path[0].value)
         setSearchString(e.target.value)
         
+    }
+
+    const onClickSortByValidado = () =>{
+        if (sortBy === "VALIDADO +"){
+            setSortBy("VALIDADO -");
+            setValidadoString(<FontAwesomeIcon icon={faSortAsc}/>);
+        }else{
+            setSortBy("VALIDADO +");
+            setValidadoString(<FontAwesomeIcon icon={faSortDesc}/>);
+            setFolioString(<FontAwesomeIcon icon={faSort}/>);
+            setNombreString(<FontAwesomeIcon icon={faSort}/>);
+            setCarreraString(<FontAwesomeIcon icon={faSort}/>);
+            setCreadoString(<FontAwesomeIcon icon={faSort}/>);
+            setEditadoString(<FontAwesomeIcon icon={faSort}/>);
+        }
     }
 
     const showDisabledRecordsButtonClicked = () =>{
@@ -177,6 +198,12 @@ function StudentsSearch ({students,visible,submitFormSelectStudent,newStudentBut
                         <Button variant="light" onClick={onClickSortByCarrera}><b>
                             {carreraString}{'  '}
                             Carrera
+                            </b></Button>{' '}
+                        </th>
+                        <th>
+                        <Button variant="light" onClick={onClickSortByValidado}><b>
+                            {validadoString}{'  '}
+                            Validado
                             </b></Button>{' '}
                         </th>
                         <th>

@@ -12,7 +12,7 @@ import PopupMessage from './PopupMessage.jsx';
 import { saveAs } from 'file-saver';
 import { FormikHelpers} from 'formik';
 import {StudentType, PopupMessageType, SelectStudentForm, DeleteStudentForm,
-    DisableStudentForm, EditStudentForm,ResponsibleType,SchoolType,DegreeType} from '../types';
+    DisableStudentForm, EditStudentForm,ResponsibleType,SchoolType,DegreeType,StudentSearchType} from '../types';
 import {getAllStudents,insertStudent,getStudent,editStudent,getResponsibles,
     getSchool,getDegrees,enableStudent,disableStudent,deleteStudent,
     checkTitleStatus,editStudentStatus, sendTitle} from '../api';
@@ -30,6 +30,7 @@ function Students (){
     let [student, setStudent] = useState<StudentType>({
         id: '',
         isActive: 0,
+        isValidated: 0,
         fechaCreado:'',
         fechaEditado:'',
         folio: '',
@@ -64,42 +65,17 @@ function Students (){
         estatusTracking: '',
         xmlArchivoFirmado: '',
     });
-    let [students, setStudents] = useState<StudentType[]>([{
+    let [students, setStudents] = useState<StudentSearchType[]>([{
         id: '',
         isActive: 0,
+        isValidated: 0,
         fechaCreado:'',
         fechaEditado:'',
         folio: '',
         nombre: '',
         primerApellido: '',
         segundoApellido: '',
-        curp: '',
-        email: '',
-        carrera: '',
-        fechaInicio: '',
-        fechaTermino: '',
-        autorizacion: '',
-        fechaExpedicion: '',
-        modalidadTitulacion: '',
-        fechaExamenProfesional: '',
-        fechaExcencionExamenProfesional: '',
-        cumplioServicioSocial: '',
-        fundamentoLegalServicioSocial: '',
-        entidadFederativa: '',
-        escuelaProcedencia: '',
-        tipoEstudioAntecedente: '',
-        entidadFederativaAntecedente: '',
-        fechaInicioAntecedente: '',
-        fechaTerminoAntecedente: '',
-        numeroCedulaAntecedente: '',
-        estatusTitulo: '',
-        recibo: '',
-        cadenaOriginal: '',
-        cadenaFirmada: '',
-        xml: '',
-        xmlBase64: '',
-        estatusTracking: '',
-        xmlArchivoFirmado: '',
+        carrera: ''
     }]);
     let [school, setSchool] = useState<SchoolType>({
                 nombre: '',
@@ -275,7 +251,7 @@ function Students (){
             const res = await checkTitleStatus(student.recibo,Number(school.claveInstitucion),`${student.folio}.xml`);
             console.log(res);
             if (res?.length > 20000){
-                const estatusTracking = "XML validado por la SEP"
+                const estatusTracking = "XML validado exitosamente"
                 const xmlArchivoFirmado = res
                 await editStudentStatus(Number(student.id),estatusTracking,xmlArchivoFirmado).then(
                     ()=>getStudent(Number(student.id)).then(currStudent => setStudent(currStudent)));

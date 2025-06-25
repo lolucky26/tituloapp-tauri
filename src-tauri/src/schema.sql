@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS "schools" (
 CREATE TABLE IF NOT EXISTS "students" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "is_active" INTEGER NOT NULL DEFAULT 1,
+    "is_validated" INTEGER NOT NULL DEFAULT 0,
     "fecha_creado" TEXT NOT NULL DEFAULT '',
     "fecha_editado" TEXT NOT NULL DEFAULT '',
     "folio" TEXT NOT NULL DEFAULT '',

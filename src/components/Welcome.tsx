@@ -7,46 +7,21 @@ import MenuBar from './MenuBar.tsx';
 import Loading from './Loading.tsx';
 import Badge from 'react-bootstrap/Badge';
 import {initializeDatabase,getAllStudents,getSchool} from '../api.ts';
-import {StudentType,SchoolType} from '../types';
+import {StudentSearchType,SchoolType} from '../types';
 function Welcome (){
     const [dbExists, setDbExists] = useState<String>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    let [students, setStudents] = useState<StudentType[]>([{
+    let [students, setStudents] = useState<StudentSearchType[]>([{
         id: '',
         isActive: 0,
+        isValidated: 0,
         fechaCreado:'',
         fechaEditado:'',
         folio: '',
         nombre: '',
         primerApellido: '',
         segundoApellido: '',
-        curp: '',
-        email: '',
-        carrera: '',
-        fechaInicio: '',
-        fechaTermino: '',
-        autorizacion: '',
-        fechaExpedicion: '',
-        modalidadTitulacion: '',
-        fechaExamenProfesional: '',
-        fechaExcencionExamenProfesional: '',
-        cumplioServicioSocial: '',
-        fundamentoLegalServicioSocial: '',
-        entidadFederativa: '',
-        escuelaProcedencia: '',
-        tipoEstudioAntecedente: '',
-        entidadFederativaAntecedente: '',
-        fechaInicioAntecedente: '',
-        fechaTerminoAntecedente: '',
-        numeroCedulaAntecedente: '',
-        estatusTitulo: '',
-        recibo: '',
-        cadenaOriginal: '',
-        cadenaFirmada: '',
-        xml: '',
-        xmlBase64: '',
-        estatusTracking: '',
-        xmlArchivoFirmado: '',
+        carrera: ''
     }]);
     let [school, setSchool] = useState<SchoolType>({
             nombre: '',
@@ -89,7 +64,7 @@ function Welcome (){
                     </div>  
                 <h3>Institución <Badge pill bg="primary">{school.nombre}</Badge></h3>
                 <h4>Registros de estudiantes <Badge pill bg="primary">{students.length}</Badge></h4>
-                <h4>Títulos generados <Badge pill bg="primary">{students.filter(obj => obj.xmlArchivoFirmado && obj.xmlArchivoFirmado.length > 1).length}</Badge></h4>
+                <h4>Títulos validados <Badge pill bg="primary">{students.filter(obj => obj.isValidated ).length}</Badge></h4>
                 </center>
 
             </Col>

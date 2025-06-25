@@ -5,11 +5,11 @@ import { Formik } from 'formik';
 import { ReactElement} from 'react';
 //const levenshtein = require('js-levenshtein');
 import {distance as levenshtein} from 'fastest-levenshtein';
-import {StudentType, SelectStudentForm, DeleteStudentForm, DisableStudentForm} from '../../types';
+import {StudentSearchType, SelectStudentForm, DeleteStudentForm, DisableStudentForm} from '../../types';
 import { FormikHelpers} from 'formik';
 
 interface Props {
-    students: StudentType[];
+    students: StudentSearchType[];
     submitFormSelectStudent:(values:SelectStudentForm, formikBag:FormikHelpers<SelectStudentForm>) => void;
     submitFormDeleteStudent:(values:DeleteStudentForm, formikBag:FormikHelpers<DeleteStudentForm>) => void;
     submitFormDisableStudent:(values:DisableStudentForm, formikBag:FormikHelpers<DisableStudentForm>) => void;
@@ -50,6 +50,10 @@ function StudentsSearchStudentItem ({students,submitFormSelectStudent,submitForm
                     levenshteinArr.push(levenshtein(searchString.toUpperCase(),currStudent.nombre));
                     levenshteinArr.push(levenshtein(searchString.toUpperCase(),fullName));
                 }
+                let isValidaded = 'No';
+                if (currStudent.isValidated){
+                    isValidaded = 'Sí';
+                }
                 return {
                 "id" : currStudent.id,
                 "isActive": currStudent.isActive,
@@ -64,6 +68,7 @@ function StudentsSearchStudentItem ({students,submitFormSelectStudent,submitForm
                     ):0),
                 "fechaCreado":currStudent.fechaCreado,
                 "fechaEditado":currStudent.fechaEditado,
+                "validado":isValidaded,
             } });
         studentsDict.sort((a, b) =>{
             if (searchString){
@@ -91,6 +96,10 @@ function StudentsSearchStudentItem ({students,submitFormSelectStudent,submitForm
                     aString = new Date(a.fechaEditado.replace(' ', 'T'));
                     bString = new Date(b.fechaEditado.replace(' ', 'T'));
                 }
+                if (sortBy.split(" ")[0] === "VALIDADO"){
+                    aString = a.validado?.toUpperCase()??'';
+                    bString = b.validado?.toUpperCase()??'';
+                }
                 if(sortBy.split(" ")[1] === "+"){
                     if (aString<bString)return -1;
                     if (aString>bString)return 1;
@@ -108,7 +117,7 @@ function StudentsSearchStudentItem ({students,submitFormSelectStudent,submitForm
                         <td>
                         <Formik
                             onSubmit={submitFormSelectStudentWrapped}
-                            initialValues={{id: student.id}}
+                            initialValues={{id: student.id+''}}
                             >
                             {(formikProps) => (
                             <Form noValidate onSubmit={formikProps.handleSubmit}>
@@ -124,7 +133,7 @@ function StudentsSearchStudentItem ({students,submitFormSelectStudent,submitForm
                         <td>
                         <Formik
                             onSubmit={submitFormSelectStudentWrapped}
-                            initialValues={{id: student.id}}
+                            initialValues={{id: student.id+''}}
                             >
                             {(formikProps) => (
                             <Form noValidate onSubmit={formikProps.handleSubmit}>
@@ -138,13 +147,14 @@ function StudentsSearchStudentItem ({students,submitFormSelectStudent,submitForm
                         </Formik>
                         </td>
                         <td>{student.carrera}</td>
+                        <td>{student.validado}</td>
                         <td>{student.fechaCreado}</td>
                         <td>{student.fechaEditado}</td>
                         <td>
                         <Formik
                             onSubmit={submitFormDisableStudentWrapped}
                             initialValues={{
-                                id:student.id,
+                                id:student.id+'',
                                 enabled:true
 
                             }}
@@ -172,13 +182,14 @@ function StudentsSearchStudentItem ({students,submitFormSelectStudent,submitForm
                         {student.nombre}
                         </td>
                         <td>{student.carrera}</td>
+                        <td>{student.validado}</td>
                         <td>{student.fechaCreado}</td>
                         <td>{student.fechaEditado}</td>
                         <td>
                         <Formik
                             onSubmit={submitFormDisableStudentWrapped}
                             initialValues={{
-                                id:student.id,
+                                id:student.id+'',
                                 enabled:false
                             }}
                             >
@@ -195,7 +206,7 @@ function StudentsSearchStudentItem ({students,submitFormSelectStudent,submitForm
                         <Formik
                             onSubmit={submitFormDeleteStudentWrapped}
                             initialValues={{
-                                id:student.id
+                                id:student.id+''
                             }}
                             >
                             {(formikProps) => (

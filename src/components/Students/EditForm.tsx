@@ -24,7 +24,7 @@ interface Props {
 function StudentsEditForm ({submitFormEditStudent,student,school,responsibles,degrees,onFormEdit,onFormSave}: Props): JSX.Element | null {
 
     const isValidated  = () =>{
-                if (student.estatusTracking == "XML validado por la SEP"){
+                if (student.isValidated){
                         return true;
                 }else {
                         return false;

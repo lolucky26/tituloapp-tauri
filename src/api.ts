@@ -1,6 +1,6 @@
 //TAURI CALLS ("API")
 
-import {studentTypeJSON, toStudentType, toSchoolType, responsibleTypeJSON, toResponsibleType, EditStudentForm} from './types';
+import {toStudentType, toSchoolType, toStudentSearchType, responsibleTypeJSON, toResponsibleType, EditStudentForm,StudentSearchType, StudentSearchTypeRust} from './types';
 import { invoke } from "@tauri-apps/api/core";
 
 export const initializeDatabase = async () => {
@@ -13,9 +13,8 @@ export const initializeDatabase = async () => {
 };
 
 export const getAllStudents = async () => {
-    const message = await invoke<string>('get_all_students');
-    const studentsList = JSON.parse(JSON.stringify(message));
-    const studentsListFormatted = studentsList.map((student:studentTypeJSON) => toStudentType(student));
+    const students = await invoke<StudentSearchTypeRust[]>('get_all_students');
+    const studentsListFormatted = students.map((student:StudentSearchTypeRust) => toStudentSearchType(student));
     return studentsListFormatted;
 };
 

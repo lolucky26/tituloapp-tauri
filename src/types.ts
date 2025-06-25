@@ -43,6 +43,7 @@ export interface ResponsibleType {
 export interface StudentType {
     id: string;
     isActive: number;
+    isValidated: number;
     fechaCreado: string;
     fechaEditado: string;
     folio: string;
@@ -76,6 +77,19 @@ export interface StudentType {
     xmlBase64: string;
     estatusTracking: string;
     xmlArchivoFirmado: string;
+};
+
+export interface StudentSearchType {
+    id: string;
+    isActive: number;
+    isValidated: number;
+    fechaCreado: string;
+    fechaEditado: string;
+    folio: string;
+    nombre: string;
+    primerApellido: string;
+    segundoApellido: string;
+    carrera: string;
 };
 
 /// FORM VALUES
@@ -201,6 +215,7 @@ export interface responsibleTypeJSON{
 export interface studentTypeJSON{
     id: string;
     is_active: number;
+    is_validated:number;
     fecha_creado: string;
     fecha_editado: string;
     folio: string;
@@ -234,6 +249,19 @@ export interface studentTypeJSON{
     xml_base_64: string;
     estatus_tracking: string;
     xml_archivo_firmado: string;
+};
+
+export interface StudentSearchTypeRust {
+    id: number;
+    is_active: number;
+    is_validated: number;
+    fecha_creado: string;
+    fecha_editado: string;
+    folio: string;
+    nombre: string;
+    primer_apellido: string;
+    segundo_apellido: string;
+    carrera: string;
 };
 
 //CHANGE TYPE FUNCTIONS
@@ -272,6 +300,7 @@ export function toStudentType(json:studentTypeJSON): StudentType{
     return{
         id: String(json.id),
         isActive: json.is_active,
+        isValidated: json.is_validated,
         fechaCreado:json.fecha_creado,
         fechaEditado:json.fecha_editado,
         folio: json.folio,
@@ -305,5 +334,20 @@ export function toStudentType(json:studentTypeJSON): StudentType{
         xmlBase64: json.xml_base_64,
         estatusTracking: json.estatus_tracking,
         xmlArchivoFirmado: json.xml_archivo_firmado,
+    }
+};
+
+export function toStudentSearchType(rust:StudentSearchTypeRust): StudentSearchType{
+    return{
+        id: String(rust.id),
+        isActive: rust.is_active,
+        isValidated: rust.is_validated,
+        fechaCreado: rust.fecha_creado,
+        fechaEditado: rust.fecha_editado,
+        folio: rust.folio,
+        nombre: rust.nombre,
+        primerApellido: rust.primer_apellido,
+        segundoApellido: rust.segundo_apellido,
+        carrera: rust.carrera,
     }
 };

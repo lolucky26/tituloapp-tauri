@@ -19,7 +19,7 @@ interface Props {
 function StudentsEditFollowup ({student,downloadXMLButtonClicked,sendXMLButtonClicked,checkStatusXMLButtonClicked,downloadValidatedXMLButtonClicked,buttonsDisabled}: Props): JSX.Element | null {
 
         const isValidated  = () =>{
-                if (student.estatusTracking == "XML validado por la SEP"){
+                if (student.isValidated){
                         return true
                 }else {
                         return false

@@ -2,9 +2,26 @@ use rusqlite::{Connection, Result, params};
 use std::path::Path;
 use serde_json::{Value, json};
 use crate::certificate;
-use chrono::prelude::*;
 const DB_PATH: &str = "tituloapp.db";
 const DB_SCHEMA: &str = include_str!("schema.sql");
+use chrono::Local;
+use serde::Serialize;
+
+#[derive(Serialize)]
+pub struct Student {
+    id: i32,
+    is_active: i32,
+    is_validated: i32,
+    fecha_creado: String,
+    fecha_editado: String,
+    folio: String,
+    nombre: String,
+    primer_apellido: String,
+    segundo_apellido: String,
+    carrera: String,
+}
+
+
 
 fn sqlite_value_to_json(val: rusqlite::types::Value) -> Value {
     use rusqlite::types::Value::*;
@@ -32,30 +49,38 @@ pub fn init_database() -> Result<String, String>  {
     Ok("Base de datos cargada correctamente.".into())
 }
 
+
+
 #[tauri::command]
-pub fn get_all_students() -> Result<Value, String> {
+pub fn get_all_students() -> Result<Vec<Student>, String> {
     let conn = Connection::open(DB_PATH).map_err(|e| e.to_string())?;
-    let mut stmt = conn.prepare("SELECT * FROM students").map_err(|e| e.to_string())?;
-    let column_names: Vec<String> = stmt.column_names().iter().map(|&s| s.to_string()).collect();
 
-    let rows = stmt.query_map([], {
-        let column_names = column_names.clone();
-        move |row| {
-            let mut obj = serde_json::Map::new();
-            for (i, col_name) in column_names.iter().enumerate() {
-                let value: rusqlite::types::Value = row.get(i)?;
-                obj.insert(col_name.to_string(), sqlite_value_to_json(value));
-            }
-            Ok(Value::Object(obj))
-        }
-    }).map_err(|e| e.to_string())?;
+    let mut stmt = conn
+        .prepare("SELECT id, is_active, is_validated, fecha_creado, fecha_editado, folio, nombre, primer_apellido, segundo_apellido, carrera FROM students")
+        .map_err(|e| e.to_string())?;
 
-    let mut results = Vec::new();
-    for row in rows {
-        results.push(row.map_err(|e| e.to_string())?);
+    let student_iter = stmt
+        .query_map([], |row| {
+            Ok(Student {
+                id: row.get(0)?,
+                is_active: row.get(1)?,
+                is_validated: row.get(2)?,
+                fecha_creado: row.get(3)?,
+                fecha_editado: row.get(4)?,
+                folio: row.get(5)?,
+                nombre: row.get(6)?,
+                primer_apellido: row.get(7)?,
+                segundo_apellido: row.get(8)?,
+                carrera: row.get(9)?,
+
+            })
+        })
+        .map_err(|e| e.to_string())?;
+    let mut students = Vec::new();
+    for student in student_iter {
+        students.push(student.map_err(|e| e.to_string())?);
     }
-
-    Ok(Value::Array(results))
+    Ok(students)
 }
 
 #[tauri::command]
@@ -83,7 +108,7 @@ pub fn get_student(id: i32) -> Result<Value, String> {
 #[tauri::command]
 pub fn insert_student() -> Result<i64, String> {
     let is_active = true;
-    let current_timestamp  = Utc::now().naive_utc().format("%Y-%m-%d %H:%M:%S").to_string();
+    let current_timestamp = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     let conn = Connection::open(DB_PATH).map_err(|e| e.to_string())?;
     conn.execute(
         "INSERT INTO students (is_active, fecha_creado, fecha_editado) VALUES (?1,?2,?3)",
@@ -93,7 +118,16 @@ pub fn insert_student() -> Result<i64, String> {
             current_timestamp 
         ],
     ).map_err(|e| e.to_string())?;
-    Ok(conn.last_insert_rowid())
+    // Get the id of the just-inserted record
+    let id = conn.last_insert_rowid();
+
+    // Update the folio column with the id value (convert id to string if folio is TEXT)
+    let folio = id.to_string();
+    conn.execute(
+        "UPDATE students SET folio = ?1 WHERE id = ?2",
+        params![folio, id],
+    ).map_err(|e| e.to_string())?;
+    Ok(id)
 }
 
 #[tauri::command]
@@ -126,7 +160,7 @@ pub fn edit_student(
         cadena_original: String,
         cadena_firmada: String,
         xml_base_64: String) -> Result<(), String> {
-    let current_timestamp = Utc::now().naive_utc().format("%Y-%m-%d %H:%M:%S").to_string();
+    let current_timestamp = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     let conn = Connection::open(DB_PATH).map_err(|e| e.to_string())?;
     conn.execute(
         "UPDATE students SET
@@ -239,16 +273,17 @@ pub fn disable_student(id:i32) -> Result<(), String> {
 
 #[tauri::command]
 pub fn edit_student_status(id:i32,estatus_tracking:String,xml_archivo_firmado:Option<String>) -> Result<(), String> {
-    let conn = Connection::open(DB_PATH).map_err(|e| e.to_string())?;
+    let conn: Connection = Connection::open(DB_PATH).map_err(|e| e.to_string())?;
+    let current_timestamp = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     let updated = if let Some(xml) = xml_archivo_firmado {
         conn.execute(
-            "UPDATE students SET estatus_tracking = ?2, xml_archivo_firmado = ?3 WHERE id = ?1",
-            params![id, estatus_tracking, xml],
+            "UPDATE students SET estatus_tracking = ?2, is_validated = 1, xml_archivo_firmado = ?3, fecha_editado = ?4 WHERE id = ?1",
+            params![id, estatus_tracking, xml,current_timestamp],
         )
     } else {
         conn.execute(
-            "UPDATE students SET estatus_tracking = ?2 WHERE id = ?1",
-            params![id, estatus_tracking],
+            "UPDATE students SET estatus_tracking = ?2, fecha_editado = ?3 WHERE id = ?1",
+            params![id, estatus_tracking,current_timestamp],
         )
     }.map_err(|e| e.to_string())?;
 
