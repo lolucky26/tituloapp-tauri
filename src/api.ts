@@ -1,6 +1,6 @@
 //TAURI CALLS ("API")
 
-import {toStudentType, toSchoolType, toStudentSearchType, responsibleTypeJSON, toResponsibleType, EditStudentForm,StudentSearchType, StudentSearchTypeRust} from './types';
+import {toStudentType, toSchoolType, toStudentSearchType, responsibleTypeJSON, toResponsibleType, EditStudentForm, StudentSearchTypeRust} from './types';
 import { invoke } from "@tauri-apps/api/core";
 
 export const initializeDatabase = async () => {

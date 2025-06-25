@@ -1,6 +1,6 @@
 [package]
 name = "tituloapp-tauri"
-version = "0.1.0"
+version = "0.1.1"
 description = "Digital Title App"
 authors = ["garciaoyervides"]
 edition = "2021"
